@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         initViews()
 
-        val contract = object : ActivityResultContract<Intent, String?>() {
+        val contractUsername = object : ActivityResultContract<Intent, String?>() {
             override fun createIntent(context: Context, input: Intent): Intent {
                 return input
             }
@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val launcher = registerForActivityResult(contract) {
+        val launcherUsername = registerForActivityResult(contractUsername) {
             if (!it.isNullOrBlank()) {
                 usernameTextView.text = it
             }
@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
 
 
         getUsernameButton.setOnClickListener {
-            launcher.launch(UsernameActivity.newIntent(this))
+            launcherUsername.launch(UsernameActivity.newIntent(this))
         }
 
         getImageButton.setOnClickListener {

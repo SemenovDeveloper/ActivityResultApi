@@ -1,13 +1,10 @@
 package com.semenovdev.activityresultapi
 
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
@@ -22,38 +19,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         initViews()
 
-        val contractUsername = object : ActivityResultContract<Intent, String?>() {
-            override fun createIntent(context: Context, input: Intent): Intent {
-                return input
-            }
-
-            override fun parseResult(resultCode: Int, intent: Intent?): String? {
-                if (resultCode == RESULT_OK) {
-                    return intent?.getStringExtra(UsernameActivity.EXTRA_USERNAME)
-                }
-                 return null
-            }
-        }
-
-        val contractForImage = object : ActivityResultContract<Intent, Uri?>() {
-            override fun createIntent(context: Context, input: Intent): Intent {
-                return input
-            }
-
-            override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
-                if (resultCode == RESULT_OK) {
-                    return intent?.data
-                }
-                return null
-            }
-        }
-
+        val contractUsername = ActivityResultContracts.StartActivityForResult()
         val launcherUsername = registerForActivityResult(contractUsername) {
-            if (!it.isNullOrBlank()) {
-                usernameTextView.text = it
+            if (it.resultCode == RESULT_OK) {
+                usernameTextView.text = it.data?.getStringExtra(UsernameActivity.EXTRA_USERNAME)
             }
         }
 
+        val contractForImage = ActivityResultContracts.GetContent()
         val launcherImage = registerForActivityResult(contractForImage) {
             if (it != null) {
                 imageFromGalleryImageView.setImageURI(it)
@@ -66,11 +39,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         getImageButton.setOnClickListener {
-            val intent = Intent(Intent.ACTION_PICK).apply {
-                type = "image/*"
-            }
-
-            launcherImage.launch(intent)
+            launcherImage.launch("image/*")
         }
     }
 
